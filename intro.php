@@ -107,7 +107,7 @@
 <body>
 <img src="https://emsi.ma/wp-content/uploads/2020/07/logo-1.png" alt="Logo" class="logo">
     <div class="container">
-    <h1 class="encadrer-h1">Méthode du Simplexe</h1>
+    <h1 class="encadrer-h1">Méthode Simplexe</h1>
         
         
         
@@ -118,7 +118,7 @@
         </div>
 
         <div class="container">
-        <h1 class="encadrer-h1">les étapes a suivre pour la maximisation du programme </h1>
+        <h1 class="encadrer-h1">les étapes à suivre pour la maximisation du programme </h1>
         
        
        <h2>ETAPE 1 : *le programme linéaire*</h2>
@@ -132,7 +132,7 @@
        <h3> la contrainte : "ax+by ≤ c"  -> "ax+by+e = c" </h3>
     <br>
 
-    <h2>ETAPE 3 : *Tableau*</h2>
+      <h2>ETAPE 3 : *Tableau*</h2>
        <h3> *Afficher les variables avec ses valeurs correspond dans un tableau ,pour nous aidez dans l'étape 4 (L'itération)  .</h3>
        <h3> *Extraire du tableau VB ET VHB . </h3>
 
@@ -142,9 +142,6 @@
        <h3> 4.3 : le pivot*</h3>
        <h3> 4.4 : GAUSS*</h3>
        <h3> 4.5 : test* </h3> <br>
-
-
-
 
        <form action="index.php" method="post" class="form-group">    
        <button type="submit"> START </button>

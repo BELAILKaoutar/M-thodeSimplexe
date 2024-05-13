@@ -118,9 +118,9 @@
             <!--Contraintes--> 
             <label class="title" for="contraintes">3. Contraintes *:</label>
             <textarea id="contraintes" name="contraintes" rows="6" placeholder="ax + by ≤ c"></textarea>
-            <h3>Avec :  x ; y >=0 </h3>
+            <h3>Avec :  x>=0 , y >=0 </h3>
             <!--Bouton de soumission -->
-            <button type="submit">ETAPE 2 et 3</button>
+            <button type="submit">ETAPES <br> 2 ET 3<br></button>
         </form><br> 
             <form action="intro.php" method="get">
     <button type="submit">Revenir à l'introduction</button>
