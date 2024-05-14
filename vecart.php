@@ -116,7 +116,7 @@ th, td {
         
         <h2><br>2.Variable d'écart</h2>
     <h4>Pour résoudre le programme linéaire il faut d'abord ajouter des variables d'écart aux contraintes d'inégalité pour les transformer en équations d'égalité</h4>
-    <form action="iteration.php" method="post" class="form-group">
+    <form action="index.php" method="post" class="form-group">
         <?php
         // Fonction qui génère l'équation économique
         function create_objective_equation($objectif) {
@@ -437,69 +437,106 @@ function hasNegativeValues($tableau) {
 // Test if there are negative values in the tableau
 if (hasNegativeValues($tableau)) {
     echo "<p><h2> 4.5 Test négatif : </h2> <h4>Il y a des valeurs négatives dans le tableau.</h4>";
-} else {
-    echo "<p><h2>Test positif</h2>  Il n'y a pas de valeurs négatives dans le tableau.</p>";
-}
 
-do {
-    // Identify the entering variable
-    $entering_variable = identifyEnteringVariable($tableau, $noms_variables);
+    do {
+        // Identifier la variable entrante
+        $entering_variable = identifyEnteringVariable($tableau, $noms_variables);
+        
+        // Sélectionner la ligne pivot
+        $pivot_row_index = selectPivotRow($tableau, $entering_variable, $noms_variables);
+        
+        // Extraire la valeur pivot
+        $pivot_value = extractPivot($tableau, $pivot_row_index, $entering_variable, $noms_variables);
+        
+        // Effectuer l'élimination de Gauss
+        $tableau = gaussElimination($tableau, $pivot_row_index, $entering_variable, $noms_variables);
+
+        // Afficher le tableau final
+        echo "<h2>Tableau final :</h2>";
+        afficherTableauSimplexe($tableau, array_merge($noms_variables, ['=']));
+         
+           // Récupérer la valeur de Z à partir de la première ligne
+    $valeur_Z = $tableau[0][count($tableau[0]) - 1];
     
-    // Select the pivot row
-    $pivot_row_index = selectPivotRow($tableau, $entering_variable, $noms_variables);
+    // Initialiser la conclusion avec Z*
+    $conclusion = "Z* = " . $valeur_Z; // Récupérer la valeur de Z
+        // Extraire et afficher les variables de base et hors base
+        $infos_variables = extractBasicAndNonBasicVariables($tableau, $noms_variables);
+        $variables_base = $infos_variables['basic'];
+        $variables_hors_base = $infos_variables['non_basic'];
+        
+        echo "<h2><br><br>Variables de Base :</h2>";
+        echo implode(", ", $variables_base);
+        echo "<h2><br>Variables Hors Base :</h2>";
+        echo implode(", ", $variables_hors_base);
+        echo "<h4>Z=0</h4>";
+ 
+
+    foreach ($variables_base as $variable) {
+        // Trouver l'index de la colonne correspondant à cette variable
+        $colonne_variable = array_search($variable, $noms_variables);
     
-    // Extract the pivot value
-    $pivot_value = extractPivot($tableau, $pivot_row_index, $entering_variable, $noms_variables);
+        // Parcourir chaque ligne pour trouver la valeur correspondant à cette variable
+        foreach ($tableau as $ligne) {
+            // Si la valeur dans cette colonne est égale à 1, prendre la valeur de la dernière colonne de cette ligne
+            if ($ligne[$colonne_variable] == 1) {
+                $valeur_variable_base = $ligne[count($tableau[0]) - 1]; // Récupérer la valeur de la variable de base
+                $conclusion .= ", $variable* = $valeur_variable_base"; // Ajouter cette valeur à la conclusion
+                break; // Sortir de la boucle une fois que la valeur a été trouvée
+            }
+        }
+    }
     
-    // Perform Gaussian elimination
-    $tableau = gaussElimination($tableau, $pivot_row_index, $entering_variable, $noms_variables);
-    echo "<h2>Final Tableau:</h2>";
-    afficherTableauSimplexe($tableau, array_merge($noms_variables, ['=']));
-    // Extraire et afficher les variables de base et hors base
+    // Afficher la conclusion
+    echo "<h2>Conclusion :</h2>";
+    echo $conclusion;
+    
+    } while (hasNegativeValues($tableau));
+} else {
+    echo "<p><h2>Test positif :</h2>  Il n'y a pas de valeurs négatives dans le tableau.</p>";
+
+    // Récupérer la valeur de Z à partir de la première ligne
+    $valeur_Z = $tableau[0][count($tableau[0]) - 1];
+    
+    // Initialiser la conclusion avec Z*
+    $conclusion = "Z* = " . $valeur_Z; // Récupérer la valeur de Z
+    
+    // Parcourir chaque variable de base
     $infos_variables = extractBasicAndNonBasicVariables($tableau, $noms_variables);
     $variables_base = $infos_variables['basic'];
     $variables_hors_base = $infos_variables['non_basic'];
-    
-    // Afficher les résultats
     echo "<h2><br><br>Variables de Base :</h2>";
     echo implode(", ", $variables_base);
     echo "<h2><br>Variables Hors Base :</h2>";
     echo implode(", ", $variables_hors_base);
     echo "<h4>Z=0</h4>";
-
-
-// Récupérer la valeur de Z à partir de la première ligne
-$valeur_Z = $tableau[0][count($tableau[0]) - 1];
-
-// Initialiser la conclusion avec Z*
-$conclusion = "Z* = " . $valeur_Z; // Récupérer la valeur de Z
-
-// Parcourir chaque variable de base
-foreach ($variables_base as $variable) {
-    // Trouver l'index de la colonne correspondant à cette variable
-    $colonne_variable = array_search($variable, $noms_variables);
-
-    // Parcourir chaque ligne pour trouver la valeur correspondant à cette variable
-    foreach ($tableau as $ligne) {
-        // Si la valeur dans cette colonne est égale à 1, prendre la valeur de la dernière colonne de cette ligne
-        if ($ligne[$colonne_variable] == 1) {
-            $valeur_variable_base = $ligne[count($tableau[0]) - 1]; // Récupérer la valeur de la variable de base
-            $conclusion .= ", $variable* = $valeur_variable_base"; // Ajouter cette valeur à la conclusion
-            break; // Sortir de la boucle une fois que la valeur a été trouvée
+    foreach ($variables_base as $variable) {
+        // Trouver l'index de la colonne correspondant à cette variable
+        $colonne_variable = array_search($variable, $noms_variables);
+    
+        // Parcourir chaque ligne pour trouver la valeur correspondant à cette variable
+        foreach ($tableau as $ligne) {
+            // Si la valeur dans cette colonne est égale à 1, prendre la valeur de la dernière colonne de cette ligne
+            if ($ligne[$colonne_variable] == 1) {
+                $valeur_variable_base = $ligne[count($tableau[0]) - 1]; // Récupérer la valeur de la variable de base
+                $conclusion .= ", $variable* = $valeur_variable_base"; // Ajouter cette valeur à la conclusion
+                break; // Sortir de la boucle une fois que la valeur a été trouvée
+            }
         }
     }
+    
+    // Afficher la conclusion
+    echo "<h2>Conclusion :</h2>";
+    echo $conclusion;
 }
 
-// Afficher la conclusion
-echo "<h2>Conclusion :</h2>";
-echo $conclusion;
-    // Check if there are still negative values in the tableau    
-} while (hasNegativeValues($tableau));
+
+
 
 ?>
       
           
-          <form action="iteration.php" method="get">
+          <form action="index.php" method="get">
    <br>
     <button type="submit">Revenir à l'étape précèdente</button>
 </form>
